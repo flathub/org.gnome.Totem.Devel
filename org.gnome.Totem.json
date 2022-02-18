@@ -372,8 +372,7 @@
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://gitlab.gnome.org/GNOME/totem.git",
-                    "commit": "4e66a250ebf19963355fde2bb40b45ed2a0b6c57"
+                    "url": "https://gitlab.gnome.org/GNOME/totem.git"
                 }
             ]
         }
