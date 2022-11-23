@@ -79,6 +79,7 @@
         {
             "name": "libpeas",
             "buildsystem": "meson",
+            "config-opts": [ "-Dwidgetry=false" ],
             "sources": [
                 {
                     "type": "git",
