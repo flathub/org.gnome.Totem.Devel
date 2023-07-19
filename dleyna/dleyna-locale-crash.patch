@@ -1,0 +1,101 @@
+From d6b9ab58e92ef1885d33eef2d1440b6f58aee258 Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Wed, 19 Jul 2023 11:32:32 +0200
+Subject: [PATCH 1/3] renderer: Initialise locales for UTF-8 support
+
+The C locale doesn't have UTF-8 support, just ASCII.
+---
+ renderer/daemon.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/renderer/daemon.c b/renderer/daemon.c
+index b8b6e49d81d4..e01832cf2fdf 100644
+--- a/renderer/daemon.c
++++ b/renderer/daemon.c
+@@ -23,6 +23,7 @@
+ 
+ #include <config.h>
+ 
++#include <locale.h>
+ #include <glib.h>
+ #include <glib-unix.h>
+ 
+@@ -42,6 +43,8 @@ int main(int argc, char *argv[])
+ {
+ 	int retval;
+ 
++	setlocale (LC_ALL, "");
++
+ 	g_unix_signal_add (SIGTERM, prv_quit_handler, NULL);
+ 	g_unix_signal_add (SIGINT, prv_quit_handler, NULL);
+ 
+-- 
+2.41.0
+
+
+From 65f4cd4b9d8f5663d66fa01d8d6327e26bee2f4f Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Wed, 19 Jul 2023 11:33:21 +0200
+Subject: [PATCH 2/3] server: Initialise locales for UTF-8 support
+
+The C locale doesn't have UTF-8 support, just ASCII.
+---
+ server/daemon.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/server/daemon.c b/server/daemon.c
+index dcfabc350f5e..fef32b2f81ab 100644
+--- a/server/daemon.c
++++ b/server/daemon.c
+@@ -21,6 +21,7 @@
+  *
+  */
+ 
++#include <locale.h>
+ #include <glib.h>
+ #include <glib-unix.h>
+ 
+@@ -38,6 +39,8 @@ static gboolean prv_quit_handler(gpointer user_data)
+ 
+ int main(int argc, char *argv[])
+ {
++	setlocale (LC_ALL, "");
++
+ 	g_unix_signal_add (SIGTERM, prv_quit_handler, NULL);
+ 	g_unix_signal_add (SIGINT, prv_quit_handler, NULL);
+ 
+-- 
+2.41.0
+
+
+From 232063339433dc5a51a0e8b0b30a71bd91d2e17a Mon Sep 17 00:00:00 2001
+From: Bastien Nocera <hadess@hadess.net>
+Date: Wed, 19 Jul 2023 11:41:15 +0200
+Subject: [PATCH 3/3] lib: Fix uninitialised warning
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+In function ‘g_autoptr_cleanup_generic_gfree’,
+    inlined from ‘dls_device_get_icon’ at dLeyna/libdleyna/server/device.c:5545:20:
+/usr/include/glib-2.0/glib/glib-autocleanups.h:30:3: warning: ‘url’ may be used uninitialized [-Wmaybe-uninitialized]
+---
+ libdleyna/server/device.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libdleyna/server/device.c b/libdleyna/server/device.c
+index 83808e129fac..aa11c260f4db 100644
+--- a/libdleyna/server/device.c
++++ b/libdleyna/server/device.c
+@@ -5560,7 +5560,7 @@ void dls_device_get_icon(dls_client_t *client,
+ 	dls_device_context_t *context;
+ 	dls_async_task_t *cb_data = (dls_async_task_t *)task;
+ 	dls_device_t *device = task->target.device;
+-	g_autofree gchar *url;
++	g_autofree gchar *url = NULL;
+ 	dls_device_download_t *download;
+ 
+ 	if (device->icon.bytes != NULL) {
+-- 
+2.41.0
+
