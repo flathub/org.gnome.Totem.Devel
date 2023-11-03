@@ -5,6 +5,10 @@ export GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0
 export LD_LIBRARY_PATH=/app/lib/codecs/lib/:/app/lib/
 
 for i in /app/lib/gstreamer-1.0/*.so; do
+  if [ ${i##*/} == 'libgstfdkaac.so' ]; then
+    continue
+  fi
+
   SUITE=`gst-inspect-1.0 $i | grep "Source module" | sed 's,Source module,,' | tr -d [:blank:]`
   if [ x$SUITE == x'gst-plugins-bad' ] ||
      [ x$SUITE == x'gst-plugins-ugly' ] ||
