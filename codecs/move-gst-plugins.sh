@@ -5,7 +5,8 @@ export GST_PLUGIN_SYSTEM_PATH=/app/lib/gstreamer-1.0
 export LD_LIBRARY_PATH=/app/lib/codecs/lib/:/app/lib/
 
 for i in /app/lib/gstreamer-1.0/*.so; do
-  if [ ${i##*/} == 'libgstfdkaac.so' ]; then
+  if [ ${i##*/} == 'libgstfdkaac.so' ] ||
+     [ ${i##*/} == 'libgstopenh264.so' ]; then
     continue
   fi
 
