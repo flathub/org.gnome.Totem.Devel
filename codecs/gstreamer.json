@@ -17,7 +17,6 @@
         "-Dlibav=enabled",
         "-Dbad=enabled",
         "-Dvaapi=disabled",
-        "-Dgst-plugins-bad:openh264=disabled",
         "-Dgst-plugins-bad:vulkan=disabled",
         "-Dgst-plugins-bad:va=enabled",
         "-Dugly=enabled",
@@ -38,7 +37,10 @@
         },
         {
             "type": "patch",
-            "path": "gst-libav-stop-caching-codecs.patch"
+            "paths": [
+                "gst-libav-stop-caching-codecs.patch",
+                "gst-openh264-Fail-gracefully-if-openh264-encoder-decoder.patch"
+            ]
         },
         {
             "type": "file",

@@ -1,0 +1,62 @@
+From cfa1d036a1d100dfec45868bb10a889386d44063 Mon Sep 17 00:00:00 2001
+From: Kalev Lember <klember@redhat.com>
+Date: Tue, 31 Oct 2023 17:59:32 +0100
+Subject: [PATCH] openh264: Fail gracefully if openh264 encoder/decoder
+ creation fails
+
+This can happen with the dummy "noopenh264" library that the freedesktop
+flatpak runtime ships, and Fedora is planning on shipping as well. In
+both cases the dummy implementation gets replaced with the actual
+openh264 library that's downloaded directly from Cisco, but just to be
+on safe side, this patch makes it careful to check the return values to
+avoid crashing if the underlying library hasn't been swapped out yet.
+
+The patch is taken from freedesktop-sdk and was originally written by
+Valentin David <valentin.david@codethink.co.uk>.
+
+Part-of: <https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/5581>
+---
+ .../gst-plugins-bad/ext/openh264/gstopenh264dec.cpp       | 7 ++++++-
+ .../gst-plugins-bad/ext/openh264/gstopenh264enc.cpp       | 8 +++++++-
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/subprojects/gst-plugins-bad/ext/openh264/gstopenh264dec.cpp b/subprojects/gst-plugins-bad/ext/openh264/gstopenh264dec.cpp
+index 6d3464628f..77f2b8fe34 100644
+--- a/subprojects/gst-plugins-bad/ext/openh264/gstopenh264dec.cpp
++++ b/subprojects/gst-plugins-bad/ext/openh264/gstopenh264dec.cpp
+@@ -159,7 +159,12 @@ gst_openh264dec_start (GstVideoDecoder * decoder)
+     WelsDestroyDecoder (openh264dec->decoder);
+     openh264dec->decoder = NULL;
+   }
+-  WelsCreateDecoder (&(openh264dec->decoder));
++
++  if (WelsCreateDecoder (&(openh264dec->decoder)) != 0) {
++    GST_ELEMENT_ERROR (openh264dec, LIBRARY, INIT, (NULL),
++        ("Failed to create OpenH264 decoder."));
++    return FALSE;
++  }
+ 
+ #ifndef GST_DISABLE_GST_DEBUG
+   {
+diff --git a/subprojects/gst-plugins-bad/ext/openh264/gstopenh264enc.cpp b/subprojects/gst-plugins-bad/ext/openh264/gstopenh264enc.cpp
+index 00ad6b1d65..6b54b1584f 100644
+--- a/subprojects/gst-plugins-bad/ext/openh264/gstopenh264enc.cpp
++++ b/subprojects/gst-plugins-bad/ext/openh264/gstopenh264enc.cpp
+@@ -759,7 +759,13 @@ gst_openh264enc_set_format (GstVideoEncoder * encoder,
+     WelsDestroySVCEncoder (openh264enc->encoder);
+     openh264enc->encoder = NULL;
+   }
+-  WelsCreateSVCEncoder (&openh264enc->encoder);
++
++  if (WelsCreateSVCEncoder (&openh264enc->encoder) != 0) {
++    GST_ELEMENT_ERROR (openh264enc, LIBRARY, INIT, (NULL),
++        ("Failed to create OpenH264 encoder."));
++    return FALSE;
++  }
++
+   unsigned int uiTraceLevel = WELS_LOG_ERROR;
+   openh264enc->encoder->SetOption (ENCODER_OPTION_TRACE_LEVEL, &uiTraceLevel);
+ 
+-- 
+2.30.2
+
