@@ -5,8 +5,8 @@
         {
             "type": "git",
             "url": "https://code.videolan.org/videolan/libdvdread.git",
-            "tag": "6.1.0",
-            "commit": "d413571ce39acd404523b6742ba361215f6ada68"
+            "tag": "6.1.3",
+            "commit": "0e020921726ee812e633959d9ad6315ff58b902b"
         },
         {
             "type":"script",
