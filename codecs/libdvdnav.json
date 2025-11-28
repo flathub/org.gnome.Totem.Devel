@@ -5,8 +5,8 @@
         {
             "type": "git",
             "url": "https://code.videolan.org/videolan/libdvdnav.git",
-            "tag": "6.1.0",
-            "commit": "4f48efd43efb2e3372cb494a8893342e1fb507ae"
+            "tag": "6.1.1",
+            "commit": "49f36c397a31e663d9e59b909379808a08b80b8f"
         },
         {
             "type":"script",
